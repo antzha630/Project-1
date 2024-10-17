@@ -1,0 +1,169 @@
+---
+title: "Project 1"
+author: "Anthony Zhang - SDS 313 UT Austin"
+date: "2024-09-27"
+output:
+  html_document:
+    code_folding: hide
+    toc: TRUE
+    toc_float: TRUE
+    css: style.css
+---
+
+```{=html}
+<style>
+  body {
+    font-family: "Times New Roman", Times, serif;
+  }
+</style>
+```
+```{r global_options, echo=FALSE}
+knitr::opts_chunk$set(fig.height=3, fig.width=4, warning=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60))
+
+#needed packages:
+library(ggplot2)
+library(kableExtra)
+```
+
+------------------------------------------------------------------------
+
+# <font color="blue">**Introduction**</font>
+
+**Introduce your dataset by briefly describing how it was collected and providing any relevant background to give your reader context about the variables. Describe which variable is your outcome variable of interest and which predictors you will be investigating. Include a picture (with a citation directly below the image) that relates to your analysis.**
+
+Check out this link if you would like to learn more about the [American Kennel Club](https://www.akc.org/)
+
+My dataset of DogBreeds.csv was collected by the American Kennel Club in 2020. They got the data from people registering their dog through this organization. The dataset has 12 columns / variables (Breed, Description, Coat Type, Coat Length, Shedding Level, Drooling Level, Openness to Strangers, Protective Nature, Trainability, Energy Level, Barking Level and Popularity Rank in 2020). Each of these variables are different types of physical and personality traits dogs usually have. All of the numerical variables are measured on a scale of 1-5 while there are short, medium, and long coat lengths. Coat type is measured in corded, double, plott hounds, silkly, wavy, and wiry types. My outcome variable is the popularity rank of the dog breeds in 2020. This is because all of the other variables all contribute and have an effect on whether the dog breed is popular or not. I will be investigating whether a dog breed's coat type, shedding level, and trainability level have a linear relationship with their popularity rank in 2020. The multivariate graph of trainability level versus popularity rank by coat length will give more information about whether trainability affects the dog breed's rank and whether a dog breed's coat length impacts it's trainability level or popularity rank.
+
+![Mixed Poodle](Poodle.jpg)
+
+*Here is the [Image Source](https://www.thepaws.net/20-dogs-mixed-with-poodles/)*
+
+# <font color="blue">**Outcome Variable**</font>
+
+**[Outcome Variable of Ranked Popularity of Dog Breeds in 2020 Univariate Distribution]**
+
+**Display the univariate distribution of your outcome variable and describe it using the appropriate statistics.**
+
+```{r fig.height=5, fig.width=7}
+#reading files
+dogs <- read.csv('Project1_DogBreeds.csv')
+
+#create histogram of ranked popularity of dog breeds in 2020
+hist(dogs$Rank_2020,main='Histogram of Ranked Popularity of Dog Breeds in 2020',xlab='Ranked Popularity of Dog Breeds',ylab = 'Frequency',col='Blue',xlim=c(0,200), ylim = c(0,30))
+#get mean of that column and round with 2 digits
+round(mean(dogs$Rank_2020), digits=2)
+# get sd of that column and round with 2 digits
+round(sd(dogs$Rank_2020), digits = 2)
+# get 5 number sum of that column and round with 2 digits
+round(fivenum(dogs$Rank_2020), digits = 2)
+```
+
+The distribution of the histogram of ranked popularity of dog breeds in 2020 versus its frequency is uniform. A uniform histogram means that the dog breed's ranked popularity is evenly distributed. Therefore, I will use the mean of `r round(mean(dogs$Rank_2020), digits=2)` as the center measurement and the standard deviation of `r round(sd(dogs$Rank_2020), digits = 2)` as the spread measurement. It is important to note that the mean and median are the same number in a uniform distribution. Mean and standard deviation are used as the center measurement and spread measurement for uniform distributions because they are more affected by outliers and are used for symmetrical distributions. There are no outliers in a uniform distribution. Lastly, I printed the 5 number summary of minimum, Q1, median, Q3, and maximum in order to give more information about the graph.\
+Here is the 5 number summary: `r round(fivenum(dogs$Rank_2020), digits = 2)`
+
+# <font color="blue">**Bivariate Analyses**</font>
+
+**For each of your three predictors, create a graph to shows its bivariate relationship with the outcome variable. Calculate the relevant bivariate statistics and briefly describe the relationships between each predictor and your outcome, referencing your graphs.**
+
+### **#1 Dog Breed's Coat Type versus their Popularity Rank in 2020 (Categorical Predictor Variable)**
+
+```{r fig.height=5, fig.width=7}
+# make a boxplot of coat type versus popularity rank in 2020
+boxplot(dogs$Rank_2020 ~ dogs$Coat_Type,
+        main = "Boxplot of Dog's Coat Type vs Rank in 2020",
+        xlab = "Coat Type",
+        ylab = "Rank in 2020",
+        col = "lightblue") 
+
+
+```
+
+This boxplot shows the popularity rank of dog breeds in 2020 by a dog breed's coat type. A lower rank in 2020 means that the dog breed is more popular while a higher rank in 2020 means that the dog breed is less popular. Dog breeds with a silky coat type are generally more popular since it has the lowest median popularity rank in 2020. On the other hand, plott hounds and corded coat types have higher median popularity ranks compared to the other coat types meaning that these coat types are generally not as popular. Furthermore, double and wavy coat types have the highest IQR meaning that they have the most variability in popularity ranking for 2020. On the other hand, corded and plott hounds have lower IQRs meaning they have the least variability in popularity ranking for 2020. Because the corded coat type has a pretty low median and IQR, it is safe to assume that this coat type is pretty unpopular for customers looking for a specific dog breed to buy.
+
+### **#2 Dog Breed's Trainability versus their Popularity Rank in 2020 (Numerical Predictor Variable)**
+
+The next two bivariate analyses use the term correlation coefficient to describe the relationship between the variables. Here is a wikipedia page to learn more about it and it's uses! [Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient)
+
+```{r fig.height=5, fig.width=7}
+plot(dogs$Trainability,dogs$Rank_2020,main='Trainability Level vs Rank in 2020',xlab='Trainability Level (1 through 5)',ylab='Rank in 2020 (1-195)',pch=20)
+# find correlation coefficient which describes how correlated the two vars are
+# around 0 for correlation coefficient means weak to no linear relationship between vars
+round(cor(dogs$Trainability, dogs$Rank_2020),digits = 2)
+```
+
+The dog breed's trainability level is not related to their popularity ranking in 2020. There is a correlation coefficient of `r round(cor(dogs$Trainability, dogs$Rank_2020),digits = 2)` between the dog breed's trainability level and popularity ranking. Since this number is close to 0 and the points are pretty scattered, there is a little to no linear relationship between the two variables. Also, there is a negative relationship between the two variables because the correlation coefficient is negative. This would imply that dog breeds with a higher trainability level tend to have lower rank in 2020.
+
+### **#3 Dog Breed's Shedding Level versus Popularity Ranking in 2020 (Numerical Predictor Variable)**
+
+```{r fig.height=5, fig.width=7}
+plot(dogs$Shedding_Level,dogs$Rank_2020,main='Shedding Level (1 through 5 with 5 being highest) vs Rank in 2020',xlab='Shedding Level (1 through 5 with 5 being highest)',ylab='Rank in 2020',pch=20)
+# find correlation coefficient which describes how correlated the two vars are
+# around 0 for correlation coefficient means weak to no linear relationship between vars
+round(cor(dogs$Shedding_Level, dogs$Rank_2020),digits = 2)
+```
+
+A dog breed's shedding level is not related to it's popularity ranking in 2020. There is a correlation coefficient of `r round(cor(dogs$Shedding_Level, dogs$Rank_2020),digits = 2)` between these two variables. Since this number is close to 0 and the points are pretty scattered, there is little to no linear relationship between the two variables. Also, there is a negative relationship between the two variables because the correlation coefficient is negative. This would imply that dog breeds with a higher shedding level tend to have lower rank in 2020.
+
+### **#4 Multivariate Plot: Dog Breed's Trainability versus Popularity Ranking by Coat Length**
+
+```{r fig.height=5, fig.width=7}
+#if the coat length is short, make that point blue
+#if the coat lenght is medium, make that point green
+#if the coat length is long, make that point red
+colors <- ifelse(dogs$Coat_Length == "Short", "blue",
+                 ifelse(dogs$Coat_Length == "Medium", "green", 
+                        ifelse(dogs$Coat_Length == "Long", "red", "black")))
+#plot of trainability vs rank
+plot(dogs$Trainability, dogs$Rank_2020, 
+     xlab = "Trainability Level", 
+     ylab = "Popularity Rank (2020)", 
+     main = "Trainability vs Popularity Rank by Coat Length",
+     #color code by coat length
+     col = colors,
+     pch = 19)  
+# Add a legend for what each of the colors mean in terms of coat length
+legend("topright", 
+       legend = c("Short", "Medium", "Long"), 
+       col = c("blue", "green", "red"), 
+       pch = 19, 
+       title = "Coat Length")
+```
+
+The scatterplot shows that trainability level and popularity rank in 2020 don't have a consistent relationship due to the points being pretty scattered. Also, the color coded points representing the different coat types seem pretty random, indicating coat length doesn't impact a dog breed's coat length or popularity rank.
+
+# <font color ="blue">**Choice Elements**</font>
+
+**In addition to each section described above, your dataset/report must include at least 5 of the following elements. In a short paragraph, describe which of these elements you included and where they show up in your report:**\
+**A. Use 2 or more in-line codes within your report.**\
+**B. Include at least 2 working hyperlinks within your report that further explain your data source or one of the variables.**\
+**C. Change the default font style, size, and/or color of the text in part of your report to highlight some important part of your analysis.**\
+**D. Include a floating table of contents to allow easy navigation across sections.**\
+**E. Create at least one new variable that is part of your analysis, as either the outcome variable or a predictor variable.**\
+**F. Create a subset from the original dataset to investigate for at least one of your bivariate analyses. The subset should make sense in the context of your analysis.**\
+**G. At the end of your bivariate analysis section, include a multivariate plot that displays the relationship among your outcome variable and at least two of the predictors. Briefly interpret the findings from your graph (no descriptive statistics required).**
+
+The elements that I used are A, B, C, D, and G.\
+A. I used in-line codes when I was outputting the mean, standard deviation, and five number summary for the ranked popularity of dog breeds in 2020. Also, I used it to output the two correlation coefficients for my last two bivariate scatterplots.\
+B. I included two working hyperlinks within my report. My first hyperlink is a link to check out the American Kennel Club which is the organization that collected all this data and manages many breeds of dogs. The reader can find information about their organization's purpose, available breeds, expert advice, products & services, sports & events, and clubs & delegates. This is located in the introduction section. My second hyperlink is a wikipedia article on correlation coefficient. The reader can find more information about the naming and history, definition, mathematical properties, interpretation, inference, analysis, variants, software implementations, footnotes, and sensitivity towards data distributions. This is located at the 2nd bivariate distribution of a dog breed's trainability level versus popularity ranking in 2020.\
+C. I changed the color of the headers of Introduction, Univariate Distribution, Bivariate Distributions, Choice Elements, and Conclusion. Also, I changed the font style for all my text to Times New Roman in order to give my file a cleaner look. The font style change is present on the top of this R markdown file. I bolded all my headings and directions for each section too.\
+D. I made a floating table of content that goes through both headers and sub headers. This will make it easier for the reader to access specific parts of the file.\
+G. Lastly, I created a multivariate graph that compares trainability level versus popularity rank by coat length. I put it at the end of the bivariate graph section just as the assignment instructed.
+
+# <font color = "blue"> **Conclusion**</font>
+
+**Write a conclusion that summarizes your analysis findings and suggests areas for future research. Include all references for your report at the bottom.**
+
+Through my findings, I found that the distribution for a dog breed's popularity ranking in 2020 is pretty uniform, meaning that the mean and standard deviation should be used as the center measurement and spread measurement. Also, I found that dog breeds with a silky coat type are generally more popular while dog breeds with a plott hound or corded coat type are generally less popular. Because the correlation coefficient between a dog breed's trainability level and popularity ranking is close to 0, I was able to see that these two variables are not related. I found that a dog breed's shedding level and popularity ranking aren't related due to the same reason. My multivariate plot showed that trainability level isn't related to popularity rank and that coat length doesn't impact a dog breed's trainability level or popularity ranking. Lastly, I used in-line codes, hyperlinks, color, a Times New Roman font style, a floating table of contents, bolded headers, and a multivariate graph to make my file clearer, look better, and give more information about the varying relationships.
+
+In the future, the American Kennel Club can could explore how factors like a dog breed's cost for caring or general lifetime age could affect their popularity ranking. This could give more information about specific factors that influence one's choice in buying a specific dog breed.
+
+References Used:\
+[Mixed Poodle](https://www.thepaws.net/20-dogs-mixed-with-poodles/)\
+[American Kennel Club](https://www.akc.org/)\
+[Pearson correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient)\
+[Multivariate Plots](https://pjbartlein.github.io/GeogDataAnalysis/lec05.html)\
+[CSS Font Style Changes](https://www.w3schools.com/css/css_font.asp)\
+[HTML Font Color Changes](https://www.geeksforgeeks.org/html-font-color-attribute/)
+
+------------------------------------------------------------------------
